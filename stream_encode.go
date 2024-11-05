@@ -5,7 +5,7 @@
 package opus
 
 /*
-#cgo LDFLAGS: -L /home/victor/code/libopusenc/.libs -lopusenc
+#cgo LDFLAGS: -lopusenc
 #cgo CFLAGS: -I/usr/include/opus
 #include <opusfile.h>
 #include <opusenc.h>
@@ -13,6 +13,9 @@ package opus
 #include <string.h>
 
 OggOpusEnc *my_ope_encoder_create_callback(uintptr_t p, int *error);
+int setBitrate( OggOpusEnc * enc,uint32_t bitrate);
+int setApplication (OggOpusEnc * enc, uint32_t app);
+int setComplexity (OggOpusEnc * enc, uint32_t complexity);
 
 */
 import "C"
@@ -21,6 +24,16 @@ import (
 	"io"
 	"unsafe"
 )
+
+type encoderStreamParameters struct {
+	encoderApplication C.int
+	encoderBitRate     C.int
+	encoderComplexity  C.int
+	encoderFrameSize   C.int
+	encoderSampleRate  C.int
+	maxFamesPerPage    C.int
+	resampleQuality    C.int
+}
 
 type EncoderStream struct {
 	id         uintptr
@@ -88,6 +101,30 @@ func (s *EncoderStream) Init(write io.Writer) error {
 		return StreamError(errno)
 	}
 	s.oggencoder = oggencoder
+	return nil
+}
+
+func (s *EncoderStream) SetBitrate(bitrate int32) error {
+	int_err := C.setBitrate(s.oggencoder, C.uint(bitrate))
+	if int_err != 0 {
+		return fmt.Errorf("setBitrate error: %v", int_err)
+	}
+	return nil
+}
+
+func (s *EncoderStream) SetApplication(app Application) error {
+	int_err := C.setApplication(s.oggencoder, C.uint(app))
+	if int_err != 0 {
+		return fmt.Errorf("setApplication error: %v", int_err)
+	}
+	return nil
+}
+
+func (s *EncoderStream) SetComplexity(complexity int32) error {
+	int_err := C.setComplexity(s.oggencoder, C.uint(complexity))
+	if int_err != 0 {
+		return fmt.Errorf("setComplexity error: %v", int_err)
+	}
 	return nil
 }
 

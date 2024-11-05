@@ -47,3 +47,17 @@ OggOpusEnc * my_ope_encoder_create_callback(uintptr_t p, int *error){
     return ope_encoder_create_callbacks(&encoderCallbacks, (void *)p, comments, 48000, 1, 0, error);
 
 }
+
+// encoder setup functions
+
+int setBitrate( OggOpusEnc * enc,uint32_t bitrate) {
+	return ope_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate));
+}
+
+int setApplication (OggOpusEnc * enc, uint32_t app){
+    return ope_encoder_ctl(enc, OPUS_SET_APPLICATION(app));
+}
+
+int setComplexity (OggOpusEnc * enc, uint32_t complexity) {
+    return ope_encoder_ctl(enc, OPUS_SET_COMPLEXITY(complexity));
+}

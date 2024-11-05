@@ -56,6 +56,9 @@ func main() {
 		panic(err)
 	}
 	so, err := opus.NewEncoderStream(fo)
+	so.SetBitrate(6000)
+	so.SetApplication(opus.AppVoIP)
+	so.SetComplexity(10)
 	if err != nil {
 		panic(err)
 	}
@@ -77,5 +80,5 @@ func main() {
 		so.Write(pcm)
 	}
 
-	fmt.Printf("Hello World\n")
+	fmt.Printf("Encoding\n")
 }
