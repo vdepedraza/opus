@@ -8,13 +8,14 @@
 // plays nice with the CGo rules and avoids any confusion.
 
 #include <opusfile.h>
+#include <opusenc.h>
 #include <stdint.h>
 
 // Defined in Go. Uses the same signature as Go, no need for proxy function.
 int go_readcallback(void *p, unsigned char *buf, int nbytes);
 
-static struct OpusFileCallbacks callbacks = {
-    .read = go_readcallback,
+static struct OpusFileCallbacks streamCallbacks = {
+    .read = go_readcallback
 };
 
 // Proxy function for op_open_callbacks, because it takes a void * context but
@@ -25,5 +26,24 @@ static struct OpusFileCallbacks callbacks = {
 OggOpusFile *
 my_open_callbacks(uintptr_t p, int *error)
 {
-    return op_open_callbacks((void *)p, &callbacks, NULL, 0, error);
+    return op_open_callbacks((void *)p, &streamCallbacks, NULL, 0, error);
+}
+
+// encoder callbacks
+int go_writecallback(void *p, const unsigned char *buf, int nbytes);
+
+int closeCallback(void *p){
+    return 0;
+}
+
+static OpusEncCallbacks encoderCallbacks = {
+    .write = go_writecallback,
+    .close = closeCallback,
+};
+
+OggOpusEnc * my_ope_encoder_create_callback(uintptr_t p, int *error){
+    // 48khz, mono channel 
+    OggOpusComments * comments = ope_comments_create();
+    return ope_encoder_create_callbacks(&encoderCallbacks, (void *)p, comments, 48000, 1, 0, error);
+
 }

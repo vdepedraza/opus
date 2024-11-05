@@ -22,9 +22,9 @@ func int16ToByteBuffer(int16Buf []int16) []byte {
 func main() {
 	const (
 		sampleRate     = 48000         // Samples per second
-		channelCount   = 2             // Number of audio channels (e.g., 2 for stereo)
+		channelCount   = 1             // Number of audio channels (e.g., 2 for stereo)
 		bytesPerSample = 2             // Bytes per sample (16-bit audio)
-		bufferSize     = 48000 * 2 * 2 // 1 second buffer for stereo 16-bit audio
+		bufferSize     = 48000 * 1 * 2 // 1 second buffer for stereo 16-bit audio
 	)
 
 	context, err := oto.NewContext(sampleRate, channelCount, bytesPerSample, bufferSize)
@@ -36,9 +36,9 @@ func main() {
 	player := context.NewPlayer()
 	defer player.Close()
 
-	// opus begins
+	// opus decoder begins
 
-	f, err := os.Open("sample1.opus")
+	f, err := os.Open("sample1_mono.opus")
 	if err != nil {
 		panic(err)
 	}
@@ -48,6 +48,19 @@ func main() {
 	}
 	defer s.Close()
 	pcmbuf := make([]int16, 16384)
+
+	// encoder
+
+	fo, err := os.Create("output.opus")
+	if err != nil {
+		panic(err)
+	}
+	so, err := opus.NewEncoderStream(fo)
+	if err != nil {
+		panic(err)
+	}
+	defer so.Close()
+
 	for {
 		n, err := s.Read(pcmbuf)
 		if err == io.EOF {
@@ -55,10 +68,13 @@ func main() {
 		} else if err != nil {
 			panic(err)
 		}
-		pcm := pcmbuf[:n*2]
+		pcm := pcmbuf[:n*1] // n * number of channels
 
 		// send pcm to audio device here, or write to a .wav file
-		player.Write(int16ToByteBuffer(pcm))
+		//player.Write(int16ToByteBuffer(pcm))
+
+		// write reencoded opus
+		so.Write(pcm)
 	}
 
 	fmt.Printf("Hello World\n")
