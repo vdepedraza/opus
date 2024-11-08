@@ -5,8 +5,7 @@
 package opus
 
 /*
-#cgo LDFLAGS: -lopusenc
-#cgo CFLAGS: -I/usr/include/opus
+#cgo pkg-config: libopusenc
 #include <opusfile.h>
 #include <opusenc.h>
 #include <stdint.h>
