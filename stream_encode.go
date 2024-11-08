@@ -6,6 +6,7 @@ package opus
 
 /*
 #cgo pkg-config: libopusenc
+
 #include <opusfile.h>
 #include <opusenc.h>
 #include <stdint.h>
