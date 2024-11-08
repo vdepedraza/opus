@@ -29,6 +29,7 @@ const (
 	// Maximum size of an encoded frame. I actually have no idea, but this
 	// looks like it's big enough.
 	maxEncodedFrameSize = 10000
+	maxDecodedFrameSize = 15000 // 60ms of 32bit samples at 48khz = 11520 bytes
 )
 
 func Version() string {
