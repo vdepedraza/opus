@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/oto"
-	"github.com/vdepedraza/opus"
+	"github.com/vdepedraza/opus-go"
 )
 
 func int16ToByteBuffer(int16Buf []int16) []byte {
