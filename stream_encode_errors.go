@@ -8,12 +8,12 @@
 package opus
 
 /*
-#cgo pkg-config: opusfile
-#include <opusfile.h>
+#cgo pkg-config: libopusenc
+#include <opusenc.h>
 */
 import "C"
 
-// StreamError represents an error from libopusfile.
+// StreamError represents an error from libopusenc.
 type StreamEncodeError int
 
 var _ error = StreamEncodeError(0)

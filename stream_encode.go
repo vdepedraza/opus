@@ -128,12 +128,12 @@ func (s *EncoderStream) SetComplexity(complexity int32) error {
 	return nil
 }
 
-func (s *EncoderStream) Write(pcm []int16) (int, error) {
+func (s *EncoderStream) Write(pcm []int16) error {
 	if s.oggencoder == nil {
-		return 0, fmt.Errorf("opus encoder stream is uninitialized or already closed")
+		return fmt.Errorf("opus encoder stream is uninitialized or already closed")
 	}
 	if len(pcm) == 0 {
-		return 0, nil
+		return nil
 	}
 	streamsEnc.Save(s)
 	defer streamsEnc.Del(s)
@@ -152,10 +152,10 @@ func (s *EncoderStream) Write(pcm []int16) (int, error) {
 
 func (s *EncoderStream) WriteFloat32(pcm []float32) error {
 	if s.oggencoder == nil {
-		return 0, fmt.Errorf("opus encoder stream is uninitialized or already closed")
+		return fmt.Errorf("opus encoder stream is uninitialized or already closed")
 	}
 	if len(pcm) == 0 {
-		return 0, nil
+		return nil
 	}
 	streamsEnc.Save(s)
 	defer streamsEnc.Del(s)
