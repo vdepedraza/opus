@@ -98,7 +98,7 @@ func (s *EncoderStream) Init(write io.Writer) error {
 	defer streamsEnc.Del(s)
 	oggencoder := C.my_ope_encoder_create_callback(C.uintptr_t(s.id), &errno)
 	if errno != 0 {
-		return StreamError(errno)
+		return StreamEncodeError(errno)
 	}
 	s.oggencoder = oggencoder
 	return nil
@@ -142,16 +142,15 @@ func (s *EncoderStream) Write(pcm []int16) (int, error) {
 		s.oggencoder,
 		(*C.opus_int16)(&pcm[0]),
 		C.int(len(pcm)))
-	if n < 0 {
-		return 0, StreamError(n)
-	}
+
 	if n == 0 {
-		return 0, io.EOF
+		return nil
+	} else {
+		return StreamEncodeError(n)
 	}
-	return int(n), nil
 }
 
-func (s *EncoderStream) WriteFloat32(pcm []float32) (int, error) {
+func (s *EncoderStream) WriteFloat32(pcm []float32) error {
 	if s.oggencoder == nil {
 		return 0, fmt.Errorf("opus encoder stream is uninitialized or already closed")
 	}
@@ -164,13 +163,12 @@ func (s *EncoderStream) WriteFloat32(pcm []float32) (int, error) {
 		s.oggencoder,
 		(*C.float)(&pcm[0]),
 		C.int(len(pcm)))
-	if n < 0 {
-		return 0, StreamError(n)
-	}
+
 	if n == 0 {
-		return 0, io.EOF
+		return nil
+	} else {
+		return StreamEncodeError(n)
 	}
-	return int(n), nil
 }
 
 func (s *EncoderStream) Close() error {
